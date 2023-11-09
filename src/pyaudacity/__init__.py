@@ -57,6 +57,7 @@ import time
 from enum import Enum
 from pathlib import Path
 from typing import Optional, Union
+import json
 
 # PyAudacity has functions called open() and print(), so save the originals:
 _open = open
@@ -4238,7 +4239,7 @@ def get_info(info_type="Commands", format="JSON"):
         raise PyAudacityException(
             'info_type argument must be one of "Commands", "Menus", "Preferences", "Tracks", "Clips", "Envelopes", "Labels", or "Boxes"'
         )
-    formats = "JSON LISP Brief".split()
+    formats = "JSON LISP Brief JSONlist".split()
     if format not in formats:
         raise PyAudacityException(
             "format argument must be one of"
@@ -4248,7 +4249,12 @@ def get_info(info_type="Commands", format="JSON"):
             + '"'
         )
 
-    return do('GetInfo: Type="{}" Format="{}"'.format(info_type, format))
+    if format == "JSONlist":
+        output = do('GetInfo: Type="{}" Format="JSON"'.format(info_type))
+        output = (output [:output.rfind(']')+1])
+        return json.loads(output)
+    else:
+        return do('GetInfo: Type="{}" Format="{}"'.format(info_type, format))
 
 
 def message(text="Some message"):
