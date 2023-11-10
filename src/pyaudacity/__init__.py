@@ -285,6 +285,8 @@ def export(filename, num_channels=1):
 
     if not Path(filename).is_absolute():
         raise PyAudacityException(str(filename) + " -- not an absolute path.  Please specify an absolute path for file storage or the file may end up an an unexpected directory.")
+    if Path(filename).exists():
+        raise PyAudacityException(str(filename) + " file already exists -- Audacity will not overwrite.")
     if not isinstance(num_channels, int):
         raise PyAudacityException(
             "num_channels argument must be a int, not" + str(type(num_channels))
